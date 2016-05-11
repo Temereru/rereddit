@@ -6,3 +6,12 @@
 .glyphicon-thumbs-up {
   cursor: pointer;
 }
+
+.navbar-center {
+  margin-left: 40%;
+  width: 10%;
+}
+
+.main-part {
+  margin-top: 60px;
+}

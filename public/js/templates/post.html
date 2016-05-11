@@ -1,0 +1,24 @@
+<div class="page-header">
+  <a href="/#/home">back</a>
+
+  <h3>
+    <a ng-show="post.link" href="{{post.link}}">{{post.title}}</a>
+    <span ng-hide="post.link">{{post.title}}</span>
+  </h3>
+  <h4>Comments</h4>
+  <div ng-repeat="comment in post.comments track by $index">
+    <p>{{comment.title}} by {{comment.commenter}}</p>  
+  </div>
+  
+</div>
+
+<form ng-submit="addComment()">
+  <h3>Add a new comment</h3>
+  <div class="form-group">
+    <input type="text" class="form-control" placeholder="Title" ng-model="commentTitle"></input>
+  </div>
+  <div class="form-group">
+    <input type="text" class="form-control" placeholder="name" ng-model="commenter"></input>
+  </div>
+  <button type="submit" class="btn btn-primary">Post</button>
+</form>
