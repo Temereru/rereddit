@@ -7,7 +7,7 @@ var userSchema = new Schema({
   username: String,
   password: String,
   salt: String,
-  Comments: [{type: Schema.ObjectId, ref: 'comment'}]
+  Comments: [{type: Schema.ObjectId, ref: 'Comment'}]
 });
 
 userSchema.methods.setPassword = function(password){

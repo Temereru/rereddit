@@ -1,14 +1,16 @@
 app.controller('UserCtrl', ['$scope', 'UserServ',function($scope, UserServ){
 
-  $scope.username = '';
-  $scope.password = '';
+  $scope.userForm = {
+    username: '',
+    password: ''
+  }
 
   $scope.signup = function(){
-    var user = {
-      username: $scope.username,
-      password: $scope.password
-    }
-    UserServ.register(user);
+    UserServ.register($scope.userForm);
+  }
+
+  $scope.login = function(){
+    UserServ.login($scope.userForm);
   }
 
 }]);

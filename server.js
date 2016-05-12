@@ -18,6 +18,27 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('node_modules'));
 app.use(express.static('public'));
 
+app.get('/posts', function(req, res){
+  var postsQuery = Post.find();
+  postsQuery.populate({path: 'poster', select: '-password -salt -comments'});
+  postsQuery.exec(function(err, posts){
+    res.send(posts);
+  })
+})
+
+app.post('/post', function(req, res){
+  post = new Post();
+  post.title = req.body.title;
+  post.link = req.body.link;
+  post.poster = req.body.user;
+  post.upvotes = req.body.upvotes;
+  post.comments = req.body.comments;
+
+  post.save(function(err, post){
+
+    res.json(post);
+  })
+});
 
 app.post('/register', function(req,res){
   User.findOne({username: req.body.username}, function(err, user){
