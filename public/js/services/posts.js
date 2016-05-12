@@ -10,12 +10,25 @@ app.factory('posts', function($http, $rootScope){
     });
   };
 
+  var findPostIndexById = function(id){
+    for(i = 0; i < posts.length; i++){
+      if(posts[i]._id === id){
+        return i;
+      }
+    }
+  }
+
   getposts();
 
   return {
     subscribePostsChange: function(scope, callback){
      var handler = $rootScope.$on('posts-change-event', callback);
      scope.$on('destroy', handler);
+    },
+
+    subscribePostsComment: function(scope, callback){
+      var handler = $rootScope.$on('post-comment-event', callback);
+      scope.$on('destroy', handler);
     },
 
     sendPost: function(post){
@@ -29,6 +42,23 @@ app.factory('posts', function($http, $rootScope){
 
     givePosts: function(){
       return posts;
+    },
+
+    givePost: function(id){
+      return posts[findPostIndexById(id)];
+    },
+
+    addComment: function(postId, userId, comment){
+      $http.post('/comment/' + postId + '/' + userId, comment).then(function(res){
+        posts[findPostIndexById(postId)].comments.push(res.data);
+        $rootScope.$emit('post-comment-event');
+      }, function(error){
+        console.log(error);
+      })
+    },
+
+    givePostComments: function(id){
+      return posts[findPostIndexById(id)].comments;
     }
   };
 });

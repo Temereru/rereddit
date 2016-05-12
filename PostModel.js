@@ -6,7 +6,7 @@ var postSchema = new Schema({
   link: String,
   upvotes: Number,
   poster: {type: Schema.ObjectId, ref: 'User'},
-  Comments: [{type: Schema.ObjectId, ref: 'Comment'}]
+  comments: [{type: Schema.ObjectId, ref: 'Comment'}]
 });
 
 var Post = mongoose.model('Post', postSchema);

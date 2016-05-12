@@ -12,7 +12,7 @@ app.config(function($stateProvider, $urlRouterProvider){
     });
   $stateProvider
     .state('post', {
-      url: '/post/:index',
+      url: '/post/:id',
       controller: 'PostsCtrl',
       templateUrl: 'js/templates/post.html',
     });

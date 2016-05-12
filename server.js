@@ -20,7 +20,8 @@ app.use(express.static('public'));
 
 app.get('/posts', function(req, res){
   var postsQuery = Post.find();
-  postsQuery.populate({path: 'poster', select: '-password -salt -comments'});
+  postsQuery.populate({path: 'poster', select: '-password -salt'});
+  postsQuery.populate({path: 'comments', select:'-post', populate: {path: 'commenter', select: '-password -salt -comments'}});
   postsQuery.exec(function(err, posts){
     res.send(posts);
   })
@@ -35,9 +36,32 @@ app.post('/post', function(req, res){
   post.comments = req.body.comments;
 
   post.save(function(err, post){
+    var postQuery = Post.findById(post._id);
+    postQuery.populate({path: 'poster', select: '-password -salt'});
+    postQuery.populate({path: 'comments', select:'-post', populate: {path: 'commenter', select: '-password -salt -comments'}});
+    postQuery.exec(function(err, post){
+      res.json(post);
+    });
+  });
+});
 
-    res.json(post);
-  })
+app.post('/comment/:postId/:userId', function(req, res){
+  Post.findById(req.params.postId, function(err, post){
+    comment = new Comment();
+    comment.title = req.body.title;
+    comment.commenter = req.params.userId;
+    comment.post = post._id;
+    comment.save(function(error, comment){
+      post.comments.push(comment._id);
+      post.save(function(err, post){
+        var commentQuery = Comment.findById(comment._id);
+        commentQuery.populate({path: 'commenter', select: '-password -salt -comments'});
+        commentQuery.exec(function(err, comment){
+          res.send(comment);
+        });
+      })   
+    });
+  });
 });
 
 app.post('/register', function(req,res){

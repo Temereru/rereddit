@@ -1,15 +1,17 @@
-app.controller('PostsCtrl', ['$scope', 'posts', '$stateParams', function($scope, posts, $stateParams) {
-  $scope.post = posts[$stateParams.index];
+app.controller('PostsCtrl', ['$scope', 'posts', '$stateParams', 'UserServ', function($scope, posts, $stateParams, UserServ) {
+  $scope.id = $stateParams.id
+  $scope.post = posts.givePost($scope.id);
   $scope.commentTitle = '';
-  $scope.commenter = '';
+
+  posts.subscribePostsComment($scope, function(){
+    $scope.post.comments = posts.givePostComments($scope.id);
+  });
 
   $scope.addComment = function(){
     var comment = {
       title: $scope.commentTitle,
-      commenter: $scope.commenter
     }
 
-    $scope.post.comments.push(comment);
-    console.log(posts[$stateParams.index])
+    posts.addComment($scope.id, UserServ.getUserId(), comment);
   };
 }]);
