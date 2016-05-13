@@ -62,7 +62,7 @@ app.factory('posts', function($http, $rootScope){
     },
 
     upvote: function(id, token){
-      $http.put('/post/' + id + '/upvote', id, {headers: {Authorization: 'Bearer ' + token}}).then(function(res){
+      $http.put('/post/' + id + '/upvote', {}, {headers: {Authorization: 'Bearer ' + token}}).then(function(res){
         posts[findPostIndexById(id)].upvotes++;
         $rootScope.$emit('posts-change-event');
       }, function(err){

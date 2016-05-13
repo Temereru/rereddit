@@ -1,6 +1,4 @@
 <div class="page-header">
-  <a ui-sref="home">back</a>
-
   <h3>
     <a ng-show="post.link" href="{{post.link}}">{{post.title}}</a>
     <span ng-hide="post.link">{{post.title}} by {{post.poster.username}}</span>
@@ -9,10 +7,9 @@
   <div ng-repeat="comment in post.comments track by comment._id">
     <p>{{comment.title}} by {{comment.commenter.username}}</p>  
   </div>
-  
 </div>
 
-<form ng-submit="addComment()">
+<form ng-submit="addComment()" ng-show="isLogged">
   <h3>Add a new comment</h3>
   <div class="form-group">
     <input type="text" class="form-control" placeholder="Title" ng-model="commentTitle"></input>

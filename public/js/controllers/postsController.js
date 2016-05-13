@@ -2,9 +2,14 @@ app.controller('PostsCtrl', ['$scope', 'posts', '$stateParams', 'UserServ', func
   $scope.id = $stateParams.id
   $scope.post = posts.givePost($scope.id);
   $scope.commentTitle = '';
+  $scope.isLogged = UserServ.isLogged();
 
   posts.subscribePostsComment($scope, function(){
     $scope.post.comments = posts.givePostComments($scope.id);
+  });
+
+  UserServ.subscribeUserChange($scope, function(){
+    $scope.isLogged = UserServ.isLogged();
   });
 
   $scope.addComment = function(){

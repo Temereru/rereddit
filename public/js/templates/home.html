@@ -1,5 +1,5 @@
 <div ng-repeat="post in posts | orderBy:'-upvotes' track by post._id">
-  <span class="glyphicon glyphicon-thumbs-up" ng-click="incrementUpvotes(post)"></span>
+  <span class="glyphicon glyphicon-thumbs-up" ng-click="!isLogged || incrementUpvotes(post)" ng-disabled="!isLogged"></span>
     {{post.upvotes}}
   <a ng-show="post.link" href="{{post.link}}">
     {{post.title}}
@@ -13,7 +13,7 @@
   </a>
 </div>
 
-<form ng-submit="addPost()">
+<form ng-submit="addPost()" ng-show="isLogged">
   <h3>Add a new post</h3>
   <div class="form-group">
     <input type="text" class="form-control" placeholder="Title" ng-model="title"></input>
