@@ -5,7 +5,6 @@ app.controller('MainCtrl', ['$scope', 'posts', 'UserServ', function($scope, post
 
   posts.subscribePostsChange($scope, function(){
     $scope.posts = posts.givePosts();
-    console.log($scope.posts);
   })
 
   $scope.addPost = function(){
@@ -16,10 +15,10 @@ app.controller('MainCtrl', ['$scope', 'posts', 'UserServ', function($scope, post
       upvotes: 0,
       comments: []
     };
-    posts.sendPost(post);
+    posts.sendPost(post, UserServ.getToken());
   };
 
   $scope.incrementUpvotes = function(post){
-    post.upvotes++;
+    posts.upvote(post._id, UserServ.getToken());
   }
 }]);

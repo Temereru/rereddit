@@ -3,18 +3,17 @@ app.factory('UserServ', function($http, $window, $rootScope, $location){
   var loggedIn = false;
   var _setJWT = function(token){
     localStorage['passportJWT'] = token;
-  }
+  };
 
   var _clearJWT = function(){
     localStorage.removeItem('passportJWT');
-  }
+  };
 
   var currentUser = {
     userId: '',
     username: ''
-  }
+  };
   
-
   setCurrentUser = function(remove){
     if(remove){
       currentUser = {
@@ -33,11 +32,11 @@ app.factory('UserServ', function($http, $window, $rootScope, $location){
       loggedIn = true;
       $rootScope.$emit('user-change-event');
     }
-  }
+  };
 
   if(localStorage['passportJWT']){
     setCurrentUser(false);
-  }
+  };
 
   return {
     subscribeUserChange: function(scope, callback){
@@ -50,6 +49,7 @@ app.factory('UserServ', function($http, $window, $rootScope, $location){
         if(response.data.token){
             _setJWT(response.data.token);
             setCurrentUser(false);
+            $location.url('/');
         }      
       }, function(err){
         console.log(err);
@@ -61,6 +61,7 @@ app.factory('UserServ', function($http, $window, $rootScope, $location){
         if(response.data.token){
           _setJWT(response.data.token);
           setCurrentUser(false);
+          $location.url('/');
         }
       }, function(err){
         console.log(err);
@@ -83,6 +84,10 @@ app.factory('UserServ', function($http, $window, $rootScope, $location){
 
     isLogged: function(){
       return loggedIn;
+    },
+
+    getToken: function(){ 
+      return localStorage['passportJWT'];
     }
-  }
+  };
 });

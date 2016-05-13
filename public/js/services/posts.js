@@ -31,8 +31,8 @@ app.factory('posts', function($http, $rootScope){
       scope.$on('destroy', handler);
     },
 
-    sendPost: function(post){
-      $http.post('/post', post).then(function(res){
+    sendPost: function(post, token){
+      $http.post('/post', post, {headers: {Authorization: 'Bearer ' + token}}).then(function(res){
         posts.push(res.data);
         $rootScope.$emit('posts-change-event');
       }, function(error){
@@ -48,8 +48,8 @@ app.factory('posts', function($http, $rootScope){
       return posts[findPostIndexById(id)];
     },
 
-    addComment: function(postId, userId, comment){
-      $http.post('/comment/' + postId + '/' + userId, comment).then(function(res){
+    addComment: function(postId, userId, comment, token){
+      $http.post('/comment/' + postId + '/' + userId, comment, {headers: {Authorization: 'Bearer ' + token}}).then(function(res){
         posts[findPostIndexById(postId)].comments.push(res.data);
         $rootScope.$emit('post-comment-event');
       }, function(error){
@@ -59,6 +59,15 @@ app.factory('posts', function($http, $rootScope){
 
     givePostComments: function(id){
       return posts[findPostIndexById(id)].comments;
+    },
+
+    upvote: function(id, token){
+      $http.put('/post/' + id + '/upvote', id, {headers: {Authorization: 'Bearer ' + token}}).then(function(res){
+        posts[findPostIndexById(id)].upvotes++;
+        $rootScope.$emit('posts-change-event');
+      }, function(err){
+        console.log(err);
+      })
     }
   };
 });

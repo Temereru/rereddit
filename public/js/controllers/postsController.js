@@ -12,6 +12,6 @@ app.controller('PostsCtrl', ['$scope', 'posts', '$stateParams', 'UserServ', func
       title: $scope.commentTitle,
     }
 
-    posts.addComment($scope.id, UserServ.getUserId(), comment);
+    posts.addComment($scope.id, UserServ.getUserId(), comment, UserServ.getToken());
   };
 }]);

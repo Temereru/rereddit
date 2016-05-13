@@ -3,6 +3,7 @@ var app = express();
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var passport = require('passport');
+var expressJWT = require('express-jwt')
 
 var LocalStrategy = require('passport-local').Strategy;
 
@@ -11,6 +12,8 @@ var Post = require('./PostModel');
 var Comment = require('./CommentModel');
 
 mongoose.connect('mongodb://localhost/rereddit');
+
+var auth = expressJWT({secret: 'SECRET'});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -27,7 +30,7 @@ app.get('/posts', function(req, res){
   })
 })
 
-app.post('/post', function(req, res){
+app.post('/post', auth, function(req, res){
   post = new Post();
   post.title = req.body.title;
   post.link = req.body.link;
@@ -45,7 +48,7 @@ app.post('/post', function(req, res){
   });
 });
 
-app.post('/comment/:postId/:userId', function(req, res){
+app.post('/comment/:postId/:userId', auth, function(req, res){
   Post.findById(req.params.postId, function(err, post){
     comment = new Comment();
     comment.title = req.body.title;
@@ -63,6 +66,15 @@ app.post('/comment/:postId/:userId', function(req, res){
     });
   });
 });
+
+app.put('/post/:id/upvote', auth, function(req, res){
+  Post.findById(req.params.id, function(err, post){
+    post.upvotes++;
+    post.save(function(err, post){
+      res.send(post);
+    })
+  })
+})
 
 app.post('/register', function(req,res){
   User.findOne({username: req.body.username}, function(err, user){
