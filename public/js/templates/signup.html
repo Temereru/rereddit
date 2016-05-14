@@ -1,7 +1,10 @@
-<form ng-submit="signup()">
+<form ng-submit="signup()" class="col-sm-6 col-sm-offset-3">
   <h3>Enter Your Details</h3>
   <div class="form-group">
     <input type="text" class="form-control" placeholder="Username" ng-model="userForm.username"></input>
+  </div>
+  <div class="form-group">
+    <input type="email" class="form-control" placeholder="Email" ng-model="userForm.email"></input>
   </div>
   <div class="form-group">
     <input type="password" class="form-control" placeholder="Password" ng-model="userForm.password"></input>

@@ -6,6 +6,7 @@ var passport = require('passport');
 var expressJWT = require('express-jwt')
 
 var LocalStrategy = require('passport-local').Strategy;
+var FacebookStrategy = require('passport-facebook').Strategy;
 
 var User = require('./UserModel');
 var Post = require('./PostModel');
@@ -74,7 +75,54 @@ app.put('/post/:id/upvote', auth, function(req, res){
       res.send(post);
     })
   })
-})
+});
+
+app.put('/post/:id/downvote', auth, function(req, res){
+  Post.findById(req.params.id, function(err, post){
+    post.upvotes--;
+    post.save(function(err, post){
+      res.send(post);
+    })
+  })
+});
+
+app.get('/user/getPosts/:id', function(req, res){
+  Post.find({poster: req.params.id}, function(err, posts){
+    res.send(posts);
+  })
+});
+
+app.put('/user/changeProfilePicture/:id', auth, function(req, res){
+  User.findById(req.params.id, function(err, user){
+    user.profileImg = req.body.url;
+    user.save(function(err, user){
+      return res.json({token: user.generateJWT()});
+    });
+  });
+});
+
+app.put('/user/changeEmail/:id', auth, function(req, res){
+  User.findById(req.params.id, function(err, user){
+    user.email = req.body.email;
+    user.save(function(err, user){
+      return res.json({token: user.generateJWT()});
+    });
+  });
+});
+
+app.put('/user/changePassword/:id', auth, function(req, res){
+  User.findById(req.params.id, function(err, user){
+    if (!(user.validPassword(req.body.oldPass))) {
+      res.status(322)
+      return res.send('Incorrect Old Password')
+    }else{
+      user.setPassword(req.body.newPass);
+      user.save(function(err, user){
+        return res.send('Password was succesfully changed');
+      });
+    }  
+  });
+});
 
 app.post('/register', function(req,res){
   User.findOne({username: req.body.username}, function(err, user){
@@ -84,6 +132,8 @@ app.post('/register', function(req,res){
         var user = new User();
 
         user.username = req.body.username;
+        user.email = req.body.email;
+        user.profileImg = 'http://cdn.patch.com/assets/contrib/images/placeholder-user-photo.png'
         user.setPassword(req.body.password);
 
         user.save(function (err){
@@ -126,6 +176,35 @@ app.post('/login', function(req,res,next){
     }
   })(req, res, next);
 });
+
+passport.use(new FacebookStrategy({
+  clientID: '1127373727323306',
+  clientSecret: 'cefd4bab46437e5a05816a1c3f92c798',
+  callbackURL: "http://localhost:8080/user/connectFacebook/callback",
+  profileFields: ['id']
+},
+function(accessToken, refreshToken, profile, done){
+  console.log("accessToken:");
+  console.log(accessToken);
+
+  console.log("refreshToken:");
+  console.log(refreshToken);
+
+  console.log("profile:");
+  console.log(profile);
+
+  return done(null, profile);
+}
+));
+
+app.get('/user/connectFacebook', passport.authenticate('facebook'));
+
+app.get('/user/connectFacebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect : '/',
+    failureRedirect : '/'
+  }));
+
 
 app.listen(8080);
 

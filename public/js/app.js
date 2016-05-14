@@ -34,4 +34,19 @@ app.config(function($stateProvider, $urlRouterProvider){
       controller: 'DashboardCtrl',
       templateUrl: 'js/templates/dashboard.html',
     });
+    $stateProvider
+    .state('dashboard.details', {
+      url: '/details',
+      templateUrl: 'js/templates/dashboard-details.html',
+    });
+    $stateProvider
+    .state('dashboard.settings', {
+      url: '/settings',
+      templateUrl: 'js/templates/dashboard-settings.html',
+    });
+    $stateProvider
+    .state('dashboard.posts', {
+      url: '/posts',
+      templateUrl: 'js/templates/dashboard-posts.html',
+    });
 });

@@ -5,9 +5,12 @@ var jwt = require('jsonwebtoken');
 
 var userSchema = new Schema({
   username: String,
+  email: String,
+  profileImg: String,
   password: String,
   salt: String,
-  comments: [{type: Schema.ObjectId, ref: 'Comment'}]
+  comments: [{type: Schema.ObjectId, ref: 'Comment'}],
+  facebookId: String
 });
 
 userSchema.methods.setPassword = function(password){
@@ -31,6 +34,8 @@ userSchema.methods.generateJWT = function() {
   return jwt.sign({
     _id:  this._id,
     username: this.username,
+    email: this.email,
+    profileImg: this.profileImg,
     exp: parseInt(exp.getTime() / 1000)
   }, 'SECRET');
 };

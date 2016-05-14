@@ -1,0 +1,35 @@
+<div class="col-sm-6 col-sm-offset-3">
+  <h3 ng-click="prof = !prof" class="clickable">Change profile Picture</h3>
+  <div ng-show="prof">
+    <div class="col-sm-2 profile-img-container">
+      <img ng-src="{{user.profileImg}}" class="img-circle img-responsive">
+    </div>
+    <div class="col-sm-10">
+      <input class="form-control" type="url" placeholder="Profile picture Url" ng-model="changable.profUrl"></input>
+      <button class="btn btn-default" ng-click="changeProfilePicture()">Change Image</button>
+    </div> 
+  </div>
+</div>
+<div class="col-sm-6 col-sm-offset-3">
+  <h3 ng-click="emailsec = !emailsec" class="clickable">Change Email</h3>
+  <div ng-show="emailsec">
+    <p>Current Email: {{user.email}}</p>
+    <input class="form-control" type="email" placeholder="New Email" ng-model="changable.email"></input>
+    <button class="btn btn-default" ng-click="changeEmail()">Change Email</button>
+  </div>
+</div>
+<div class="col-sm-6 col-sm-offset-3">
+  <h3 ng-click="passsec = !passsec" class="clickable">Change Password</h3>
+  <div ng-show="passsec">
+    <input class="form-control" type="password" placeholder="Old Password" ng-model="changable.oldPass"></input>
+    <input class="form-control" type="password" placeholder="New Password" ng-model="changable.newPass"></input>
+    <button class="btn btn-default" ng-click="changePassword()">Change Password</button>
+    <label ng-show="showPasswordMessage">{{passwordMessage}}</label>
+  </div>
+</div>
+<div class="col-sm-6 col-sm-offset-3">
+  <h3 ng-click="connectsec = !connectsec" class="clickable">Connect with other services</h3>
+  <div ng-show="connectsec">
+    <h5 ng-click="connectFacebook()" class="clickable">Facebook</h5>
+  </div>
+</div>

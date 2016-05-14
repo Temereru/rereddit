@@ -1,9 +1,9 @@
 <html>
 <head>
   <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="style.css">
   <script src="angular/angular.min.js"></script>
   <script src="angular-ui-router/release/angular-ui-router.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
 
 </head>
 <body ng-app="redditFun" >
@@ -11,21 +11,19 @@
     <div class="navbar-header">
       <p class="navbar-brand">{{currentUsername}}</p>
     </div>
-    <div class="nav navbar-nav navbar-center">
+    <div class="nav navbar-nav col-sm-6 col-sm-offset-3">
       <h3 class="text-center">ReReddit</h3>
     </div>  
     <ul class="nav navbar-nav navbar-right collapse navbar-collapse">
       <li><a ui-sref="home"><span class="glyphicon glyphicon-home"></span> Home</a></li>  
-      <li><a ui-sref="dashboard" ng-show="isLogged"><span class="glyphicon glyphicon-wrench"></span> Dash Board</a></li>
+      <li><a ui-sref="dashboard.details" ng-show="isLogged"><span class="glyphicon glyphicon-wrench"></span> Dashboard</a></li>
       <li><a ui-sref="signup" ng-hide="isLogged"><span class="glyphicon glyphicon-pencil"></span> Sign Up</a></li>
       <li><a ui-sref="login" ng-hide="isLogged"><span class="glyphicon glyphicon-log-in"></span> Log In</a></li>
       <li><a href="#" ng-show="isLogged" ng-click="logout()"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
     </ul>
   </nav>
   <div class="row main-part">
-    <div class="col-md-6 col-md-offset-3">
-      <div ui-view></div>
-    </div>
+    <div ui-view></div>
   </div>
 
   
