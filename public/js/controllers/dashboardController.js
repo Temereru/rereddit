@@ -1,4 +1,17 @@
-app.controller('DashboardCtrl', ['$scope', 'UserServ', function($scope, UserServ){
+app.controller('DashboardCtrl', ['$scope', 'UserServ', '$location', function($scope, UserServ, $location){
+  if($location.search().facebookId){
+    UserServ.setFacebookId($location.search().facebookId);
+    $scope.connectsec = true;
+  }
+  if($location.search().auth === 'failed'){
+    $scope.facebookMessage = 'Failed authenticating with facebook'
+    $scope.showFacebookMessage = true;
+    $scope.connectsec = true;
+  }
+
+  $scope.facebookMessage = ''
+  $scope.showFacebookMessage = false;
+
   $scope.user = UserServ.getFullUserData();
   $scope.posts = [];
 
@@ -13,6 +26,12 @@ app.controller('DashboardCtrl', ['$scope', 'UserServ', function($scope, UserServ
   UserServ.subscribePasswordChange($scope, function(){
     $scope.passwordMessage = 'Password was Successfully changed'
     $scope.showPasswordMessage = true;
+  })
+
+  UserServ.subscribeFacebookSuccess($scope, function(){
+    $scope.facebookMessage = 'Successfully connected with facebook, you can now login using facebook'
+    $scope.showFacebookMessage = true;
+    $scope.connectsec = true;
   })
 
   UserServ.getUserPosts($scope.user._id);

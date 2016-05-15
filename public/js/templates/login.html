@@ -8,3 +8,9 @@
   </div>
   <button type="submit" class="btn btn-primary">Login</button>
 </form>
+
+<div class="col-sm-6 col-sm-offset-3">
+  <h3>Login with</h3>
+  <p ng-click="loginWithFacebook()" class="clickable">facebook</p>
+  <label ng-show="showErrMsg">{{errMsg}}</label>
+</div>

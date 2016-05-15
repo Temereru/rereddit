@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var expressJWT = require('express-jwt')
+var expressSession = require('express-session');
 
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
@@ -21,6 +22,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(express.static('node_modules'));
 app.use(express.static('public'));
+
+app.use(expressSession({ secret: 'mySecretKey' }));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -206,26 +209,73 @@ passport.use(new FacebookStrategy({
   profileFields: ['id']
 },
 function(accessToken, refreshToken, profile, done){
-  // console.log("accessToken:");
-  // console.log(accessToken);
-
-  // console.log("refreshToken:");
-  // console.log(refreshToken);
-
-  // console.log("profile:");
-  // console.log(profile);
 
   return done(null, profile);
 }
 ));
 
-app.get('/user/connectFacebook', passport.authenticate('facebook', { session: false }));
+app.get('/user/connectFacebook', passport.authenticate('facebook'));
 
-app.get('/user/connectFacebook/callback', function(req, res){
-  passport.authenticate('facebook', function(err, user, info){
-    res.redirect('http://localhost:8080/#/dashboard/settings?userId=' + user.id);
-  });
-});
+app.get('/user/connectFacebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect : '/FacebookConnectionSuccess',
+    failureRedirect : '/FacebookConnectionFailure'
+  }));
+
+app.get('/FacebookConnectionSuccess', function(req, res){
+  res.redirect('http://localhost:8080/#/dashboard/settings?facebookId=' + req.user.id);
+})
+
+app.get('/FacebookConnectionFailure', function(req, res){
+  res.redirect('http://localhost:8080/#/dashboard/settings?auth="failed"');
+})
+
+app.put('/user/setFacebookId/:id', auth, function(req, res){
+  User.findById(req.params.id, function(err, user){
+    user.facebookId = req.body.facebookId;
+    user.save(function(err, user){
+      res.send(user);
+    })
+  })
+})
+
+passport.use(new FacebookStrategy({
+  clientID: '1127373727323306',
+  clientSecret: 'cefd4bab46437e5a05816a1c3f92c798',
+  callbackURL: "http://localhost:8080/user/loginFacebook/callback",
+  profileFields: ['id']
+},
+function(accessToken, refreshToken, profile, done){
+
+  return done(null, profile);
+}
+));
+
+app.get('/user/loginFacebook', passport.authenticate('facebook'))
+
+app.get('/user/loginFacebook/callback', 
+  passport.authenticate('facebook', {
+    successRedirect : '/FacebookLoginSuccess',
+    failureRedirect : '/FacebookLoginFailure'
+  }));
+
+app.get('/FacebookLoginSuccess', function(req, res){
+  res.redirect('http://localhost:8080/#/login?facebookId=' + req.user.id);
+})
+
+app.get('/FacebookLoginFailure', function(req, res){
+  res.redirect('http://localhost:8080/#/login?auth=failure');
+})
+
+app.get('/user/loginFacebookId/:id', function(req, res){
+  User.findOne({facebookId: req.params.id}, function(err, user){
+    if (user) {
+      res.json({token: user.generateJWT()});
+    } else {
+      res.status(401);
+    }
+  })
+})
 
 
 app.listen(8080);
