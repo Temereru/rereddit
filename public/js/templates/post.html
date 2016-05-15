@@ -4,8 +4,10 @@
     <span ng-hide="post.link">{{post.title}} by {{post.poster.username}}</span>
   </h3>
   <h4>Comments</h4>
-  <div ng-repeat="comment in post.comments track by comment._id">
-    <p>{{comment.title}} by {{comment.commenter.username}}</p>  
+  <div ng-repeat="comment in post.comments | orderBy:'-upvotes' track by comment._id">
+   <p><span class="glyphicon glyphicon-thumbs-up" ng-click="!isLogged || incrementUpvotes(comment)" ng-disabled="!isLogged"></span>
+      {{comment.upvotes}}
+    {{comment.title}} by {{comment.commenter.username}}</p>  
   </div>
 </div>
 

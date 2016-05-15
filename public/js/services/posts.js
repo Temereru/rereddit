@@ -16,6 +16,15 @@ app.factory('posts', function($http, $rootScope){
         return i;
       }
     }
+  };
+
+  var findCommentIndexById = function(postIdx, commentId){
+    console.log(postIdx);
+    for(i = 0; i < posts[postIdx].comments.length; i++){
+      if(posts[postIdx].comments[i]._id === commentId){
+        return i;
+      }
+    }
   }
 
   getposts();
@@ -28,6 +37,11 @@ app.factory('posts', function($http, $rootScope){
 
     subscribePostsComment: function(scope, callback){
       var handler = $rootScope.$on('post-comment-event', callback);
+      scope.$on('destroy', handler);
+    },
+
+    subscribeCommentUpvote: function(scope, callback){
+      var handler = $rootScope.$on('comment-upvote-event', callback);
       scope.$on('destroy', handler);
     },
 
@@ -65,6 +79,17 @@ app.factory('posts', function($http, $rootScope){
       $http.put('/post/' + id + '/upvote', {}, {headers: {Authorization: 'Bearer ' + token}}).then(function(res){
         posts[findPostIndexById(id)].upvotes++;
         $rootScope.$emit('posts-change-event');
+      }, function(err){
+        console.log(err);
+      })
+    },
+
+    upvoteComment: function(postId, commentId, token){
+      $http.put('/comment/' + commentId + '/upvote', {}, {headers: {Authorization: 'Bearer ' + token}}).then(function(res){
+        var postIdx = findPostIndexById(postId);
+        var commentIdx = findCommentIndexById(postIdx, commentId);
+        posts[postIdx].comments[commentIdx].upvotes++;
+        $rootScope.$emit('comment-upvote-event');
       }, function(err){
         console.log(err);
       })

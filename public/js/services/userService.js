@@ -1,4 +1,4 @@
-app.factory('UserServ', function($http, $window, $rootScope, $location){
+app.factory('UserServ', function($http, $window, $rootScope, $location, $window){
   
   var loggedIn = false;
   var _setJWT = function(token){
@@ -152,11 +152,12 @@ app.factory('UserServ', function($http, $window, $rootScope, $location){
     },
 
     connectFacebook: function(id){
-      $http.get('/user/connectFacebook/', {headers: {Authorization: 'Bearer ' + getToken()}}).then(function(res){
+      $window.open('/user/connectFacebook', '_self')
+      // $http.get('/user/connectFacebook/', {headers: {Authorization: 'Bearer ' + getToken()}}).then(function(res){
 
-      }, function(err){
-        console.log(err);
-      })
+      // }, function(err){
+      //   console.log(err);
+      // })
     }
   };
 });

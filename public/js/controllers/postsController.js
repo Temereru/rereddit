@@ -8,6 +8,10 @@ app.controller('PostsCtrl', ['$scope', 'posts', '$stateParams', 'UserServ', func
     $scope.post.comments = posts.givePostComments($scope.id);
   });
 
+  posts.subscribeCommentUpvote($scope, function(){
+    $scope.post.comments = posts.givePostComments($scope.id);
+  });
+
   UserServ.subscribeUserChange($scope, function(){
     $scope.isLogged = UserServ.isLogged();
   });
@@ -19,4 +23,8 @@ app.controller('PostsCtrl', ['$scope', 'posts', '$stateParams', 'UserServ', func
 
     posts.addComment($scope.id, UserServ.getUserId(), comment, UserServ.getToken());
   };
+
+  $scope.incrementUpvotes = function(comment){
+    posts.upvoteComment($scope.id, comment._id, UserServ.getToken());
+  }
 }]);

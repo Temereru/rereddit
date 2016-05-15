@@ -22,6 +22,19 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('node_modules'));
 app.use(express.static('public'));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+// used to serialize the user for the session
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+// used to deserialize the user
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
 app.get('/posts', function(req, res){
   var postsQuery = Post.find();
   postsQuery.populate({path: 'poster', select: '-password -salt'});
@@ -32,7 +45,7 @@ app.get('/posts', function(req, res){
 })
 
 app.post('/post', auth, function(req, res){
-  post = new Post();
+  var post = new Post();
   post.title = req.body.title;
   post.link = req.body.link;
   post.poster = req.body.user;
@@ -51,7 +64,7 @@ app.post('/post', auth, function(req, res){
 
 app.post('/comment/:postId/:userId', auth, function(req, res){
   Post.findById(req.params.postId, function(err, post){
-    comment = new Comment();
+    var comment = new Comment();
     comment.title = req.body.title;
     comment.commenter = req.params.userId;
     comment.post = post._id;
@@ -70,11 +83,11 @@ app.post('/comment/:postId/:userId', auth, function(req, res){
 
 app.put('/post/:id/upvote', auth, function(req, res){
   Post.findById(req.params.id, function(err, post){
-    post.upvotes++;
+    post.upvote();
     post.save(function(err, post){
       res.send(post);
-    })
-  })
+    });
+  });
 });
 
 app.put('/post/:id/downvote', auth, function(req, res){
@@ -149,6 +162,15 @@ app.post('/register', function(req,res){
   
 });
 
+app.put('/comment/:id/upvote', auth, function(req, res){
+  Comment.findById(req.params.id, function(err, comment){
+    comment.upvote();
+    comment.save(function(err, post){
+      res.send(comment);
+    })
+  })
+});
+
 passport.use('login', new LocalStrategy(function(username, password, done) {
     User.findOne({ username: username }, function (err, user) {
       if (err) { return done(err); }
@@ -184,26 +206,26 @@ passport.use(new FacebookStrategy({
   profileFields: ['id']
 },
 function(accessToken, refreshToken, profile, done){
-  console.log("accessToken:");
-  console.log(accessToken);
+  // console.log("accessToken:");
+  // console.log(accessToken);
 
-  console.log("refreshToken:");
-  console.log(refreshToken);
+  // console.log("refreshToken:");
+  // console.log(refreshToken);
 
-  console.log("profile:");
-  console.log(profile);
+  // console.log("profile:");
+  // console.log(profile);
 
   return done(null, profile);
 }
 ));
 
-app.get('/user/connectFacebook', passport.authenticate('facebook'));
+app.get('/user/connectFacebook', passport.authenticate('facebook', { session: false }));
 
-app.get('/user/connectFacebook/callback',
-  passport.authenticate('facebook', {
-    successRedirect : '/',
-    failureRedirect : '/'
-  }));
+app.get('/user/connectFacebook/callback', function(req, res){
+  passport.authenticate('facebook', function(err, user, info){
+    res.redirect('http://localhost:8080/#/dashboard/settings?userId=' + user.id);
+  });
+});
 
 
 app.listen(8080);
