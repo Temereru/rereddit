@@ -15,7 +15,7 @@ app.controller('DashboardCtrl', ['$scope', 'UserServ', '$location', function($sc
   }
 
   if($location.search().auth === 'failed'){
-    if($location.search().auth === 'facebook'){
+    if($location.search().type === 'facebook'){
       $scope.facebookMessage = 'Failed authenticating with Facebook';
       $scope.showFacebookMessage = true;
     }else if($location.search().type === 'googlePlus') {
@@ -26,7 +26,7 @@ app.controller('DashboardCtrl', ['$scope', 'UserServ', '$location', function($sc
   }
 
   if($location.search().auth === 'success'){
-    if($location.search().auth === 'facebook'){
+    if($location.search().type === 'facebook'){
       $scope.facebookMessage = 'This Facebook account is already connected to a user';
       $scope.showFacebookMessage = true;
     }else if($location.search().type === 'googlePlus') {

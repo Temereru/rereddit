@@ -72,7 +72,7 @@ app.factory('UserServ', function($http, $window, $rootScope, $location, $window)
     },
 
     register: function(user){
-      $http.post('/register', user).then(function(response){
+      $http.post('/user/register', user).then(function(response){
         if(response.data.token){
             _setJWT(response.data.token);
             setCurrentUser(false);
@@ -84,7 +84,7 @@ app.factory('UserServ', function($http, $window, $rootScope, $location, $window)
     },
 
     login: function(user){
-      $http.post('/login', user).then(function(response){
+      $http.post('/user/login', user).then(function(response){
         if(response.data.token){
           _setJWT(response.data.token);
           setCurrentUser(false);
@@ -166,7 +166,7 @@ app.factory('UserServ', function($http, $window, $rootScope, $location, $window)
     },
 
     setFacebookId: function(id){
-      $http.put('/user/setFacebookId/' + currentUser.userId, {facebookId: id}, {headers: {Authorization: 'Bearer ' + getToken()}}).then(function(res){
+      $http.put('/user/connectFacebook/setFacebookId/' + currentUser.userId, {facebookId: id}, {headers: {Authorization: 'Bearer ' + getToken()}}).then(function(res){
         $rootScope.$emit('facebook-successfull-event');
       }, function(err){
         console.log(err);
@@ -178,7 +178,7 @@ app.factory('UserServ', function($http, $window, $rootScope, $location, $window)
     },
 
     loginFacebookId: function(scope, id){
-      $http.get('user/loginFacebookId/' + id).then(function(res){
+      $http.get('user/loginFacebook/loginFacebookId/' + id).then(function(res){
         if(res.data.token){
           _setJWT(res.data.token);
           setCurrentUser(false);
@@ -195,7 +195,7 @@ app.factory('UserServ', function($http, $window, $rootScope, $location, $window)
     },
 
     setGooglePlusId: function(id){
-      $http.put('/user/setGooglePlusId/' + currentUser.userId, {googlePlusId: id}, {headers: {Authorization: 'Bearer ' + getToken()}}).then(function(res){
+      $http.put('/user/connectGooglePlus/setGooglePlusId/' + currentUser.userId, {googlePlusId: id}, {headers: {Authorization: 'Bearer ' + getToken()}}).then(function(res){
         $rootScope.$emit('google-plus-successfull-event');
       }, function(err){
         console.log(err);
@@ -207,7 +207,7 @@ app.factory('UserServ', function($http, $window, $rootScope, $location, $window)
     },
 
     loginGooglePlusId: function(scope, id){
-      $http.get('user/loginGooglePlusId/' + id).then(function(res){
+      $http.get('user/loginGooglePlus/loginGooglePlusId/' + id).then(function(res){
         if(res.data.token){
           _setJWT(res.data.token);
           setCurrentUser(false);

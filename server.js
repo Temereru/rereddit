@@ -3,17 +3,13 @@ var app = express();
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var passport = require('passport');
-var expressJWT = require('express-jwt')
+var expressJWT = require('express-jwt');
 var expressSession = require('express-session');
-
-
-var LocalStrategy = require('passport-local').Strategy;
-var FacebookStrategy = require('passport-facebook').Strategy;
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 var User = require('./UserModel');
 var Post = require('./PostModel');
 var Comment = require('./CommentModel');
+var userRoutes = require('./routes/user');
 
 mongoose.connect('mongodb://localhost/rereddit');
 
@@ -29,6 +25,8 @@ app.use(expressSession({ secret: 'mySecretKey' }));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use('/user', userRoutes);
 
 // used to serialize the user for the session
 passport.serializeUser(function(user, done) {
@@ -104,69 +102,6 @@ app.put('/post/:id/downvote', auth, function(req, res){
   })
 });
 
-app.get('/user/getPosts/:id', function(req, res){
-  Post.find({poster: req.params.id}, function(err, posts){
-    res.send(posts);
-  })
-});
-
-app.put('/user/changeProfilePicture/:id', auth, function(req, res){
-  User.findById(req.params.id, function(err, user){
-    user.profileImg = req.body.url;
-    user.save(function(err, user){
-      return res.json({token: user.generateJWT()});
-    });
-  });
-});
-
-app.put('/user/changeEmail/:id', auth, function(req, res){
-  User.findById(req.params.id, function(err, user){
-    user.email = req.body.email;
-    user.save(function(err, user){
-      return res.json({token: user.generateJWT()});
-    });
-  });
-});
-
-app.put('/user/changePassword/:id', auth, function(req, res){
-  User.findById(req.params.id, function(err, user){
-    if (!(user.validPassword(req.body.oldPass))) {
-      res.status(322)
-      return res.send('Incorrect Old Password')
-    }else{
-      user.setPassword(req.body.newPass);
-      user.save(function(err, user){
-        return res.send('Password was succesfully changed');
-      });
-    }  
-  });
-});
-
-app.post('/register', function(req,res){
-  User.findOne({username: req.body.username}, function(err, user){
-    if (err) { return done(err); }
-
-      if (!user) {
-        var user = new User();
-
-        user.username = req.body.username;
-        user.email = req.body.email;
-        user.profileImg = 'http://cdn.patch.com/assets/contrib/images/placeholder-user-photo.png'
-        user.setPassword(req.body.password);
-
-        user.save(function (err){
-          if(err){ return next(err); }
-
-          return res.json({token: user.generateJWT()});
-        })
-      }else{
-        res.status(321);
-        return res.send('Username already in use.');
-      }
-  })
-  
-});
-
 app.put('/comment/:id/upvote', auth, function(req, res){
   Comment.findById(req.params.id, function(err, comment){
     comment.upvote();
@@ -175,198 +110,6 @@ app.put('/comment/:id/upvote', auth, function(req, res){
     })
   })
 });
-
-passport.use('login', new LocalStrategy(function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!(user.validPassword(password))) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-
-      return done(null, user);
-    });
-  }
-));
-
-app.post('/login', function(req,res,next){
-  passport.authenticate('login', function(err, user){
-    if(err){ return next(err); }
-
-    if (user) {
-      return res.json({token: user.generateJWT()});
-    } else {
-      return res.status(401);
-    }
-  })(req, res, next);
-});
-
-passport.use('connectFacebook', new FacebookStrategy({
-  clientID: '1127373727323306',
-  clientSecret: 'cefd4bab46437e5a05816a1c3f92c798',
-  callbackURL: "http://localhost:8080/user/connectFacebook/callback",
-  profileFields: ['id']
-},
-function(accessToken, refreshToken, profile, done){
-
-  return done(null, profile);
-}
-));
-
-app.get('/user/connectFacebook', passport.authenticate('connectFacebook'));
-
-app.get('/user/connectFacebook/callback',
-  passport.authenticate('connectFacebook', {
-    successRedirect : '/FacebookConnectionSuccess',
-    failureRedirect : '/FacebookConnectionFailure'
-  }));
-
-app.get('/FacebookConnectionSuccess', function(req, res){
-  User.findOne({facebookId: req.user.id}, function(err, user){
-    if (!user) {
-      res.redirect('http://localhost:8080/#/dashboard/settings?facebookId=' + req.user.id);
-    } else {
-      res.redirect('http://localhost:8080/#/dashboard/settings?auth=success&&type=facebook');
-    }
-  });
-  
-})
-
-app.get('/FacebookConnectionFailure', function(req, res){
-  res.redirect('http://localhost:8080/#/dashboard/settings?auth=failed&&type=facebook');
-})
-
-app.put('/user/setFacebookId/:id', auth, function(req, res){
-  User.findById(req.params.id, function(err, user){
-    user.facebookId = req.body.facebookId;
-    user.save(function(err, user){
-      res.send(user);
-    })
-  })
-})
-
-passport.use('loginFacebook',new FacebookStrategy({
-  clientID: '1127373727323306',
-  clientSecret: 'cefd4bab46437e5a05816a1c3f92c798',
-  callbackURL: "http://localhost:8080/user/loginFacebook/callback",
-  profileFields: ['id']
-},
-function(accessToken, refreshToken, profile, done){
-
-  return done(null, profile);
-}
-));
-
-app.get('/user/loginFacebook', passport.authenticate('loginFacebook'))
-
-app.get('/user/loginFacebook/callback', 
-  passport.authenticate('loginFacebook', {
-    successRedirect : '/FacebookLoginSuccess',
-    failureRedirect : '/FacebookLoginFailure'
-  }));
-
-app.get('/FacebookLoginSuccess', function(req, res){
-  res.redirect('http://localhost:8080/#/login?facebookId=' + req.user.id);
-})
-
-app.get('/FacebookLoginFailure', function(req, res){
-  res.redirect('http://localhost:8080/#/login?auth=failure&&type=facebook');
-})
-
-app.get('/user/loginFacebookId/:id', function(req, res){
-  User.findOne({facebookId: req.params.id}, function(err, user){
-    if (user) {
-      res.json({token: user.generateJWT()});
-    } else {
-      res.status(351);
-      res.end();
-    }
-  })
-})
-
-passport.use('connectGooglePlus', new GoogleStrategy({
-    clientID: '32469330108-8l4cgdbcoiasbbk93mu47mlvham2919h.apps.googleusercontent.com',
-    clientSecret: 'h15c3eacLx3Lfg5PR4ouOgbK',
-    callbackURL: "http://localhost:8080/user/connectGooglePlus/callback"
-  },
-  function(accessToken, refreshToken, profile, cb) {
-    
-    return cb(null, profile);
-  }
-));
-
-app.get('/user/connectGooglePlus', passport.authenticate('connectGooglePlus', { scope: ['profile'] }))
-
-app.get('/user/connectGooglePlus/callback', 
-  passport.authenticate('connectGooglePlus', {
-    successRedirect : '/googlePlusConnectSuccess',
-    failureRedirect : '/googlePlusConnectFailure'
-  }));
-
-app.get('/googlePlusConnectSuccess', function(req, res){
-  User.findOne({googlePlusId: req.user.id}, function(err, user){
-    if (!user) {
-      res.redirect('http://localhost:8080/#/dashboard/settings?googlePlusId=' + req.user.id);
-    } else {
-      res.redirect('http://localhost:8080/#/dashboard/settings?auth=success&&type=googlePlus');
-    }
-  })
-});
-
-app.get('/googlePlusConnectFailure', function(req, res){
-  res.redirect('http://localhost:8080/#/dashboard/settings?auth=failed&&type=googlePlus');
-});
-
-app.put('/user/setGooglePlusId/:id', auth, function(req, res){
-  User.findById(req.params.id, function(err, user){
-    user.googlePlusId = req.body.googlePlusId;
-    user.save(function(err, user){
-      res.send(user);
-    })
-  })
-})
-
-//dsdfds
-passport.use('loginGooglePlus',new GoogleStrategy({
-    clientID: '32469330108-8l4cgdbcoiasbbk93mu47mlvham2919h.apps.googleusercontent.com',
-    clientSecret: 'h15c3eacLx3Lfg5PR4ouOgbK',
-    callbackURL: "http://localhost:8080/user/loginGooglePlus/callback"
-  },
-  function(accessToken, refreshToken, profile, cb) {
-    
-    return cb(null, profile);
-  }
-));
-
-app.get('/user/loginGooglePlus', passport.authenticate('loginGooglePlus', { scope: ['profile'] }))
-
-app.get('/user/loginGooglePlus/callback', 
-  passport.authenticate('loginGooglePlus', {
-    successRedirect : '/googlePlusLoginSuccess',
-    failureRedirect : '/googlePlusLoginFailure'
-  }));
-
-app.get('/googlePlusLoginSuccess', function(req, res){
-  res.redirect('http://localhost:8080/#/login?googlePlusId=' + req.user.id);
-})
-
-app.get('/googlePlusLoginFailure', function(req, res){
-  res.redirect('http://localhost:8080/#/login?auth=failure&&type=googlePlus');
-})
-
-app.get('/user/loginGooglePlusId/:id', function(req, res){
-  User.findOne({googlePlusId: req.params.id}, function(err, user){
-    if (user) {
-      res.json({token: user.generateJWT()});
-    } else {
-      res.status(351);
-      res.end();
-    }
-  })
-})
 
 app.listen(8080);
 
