@@ -1,4 +1,8 @@
-.comment-body, .post-title {
+body {
+  background-color: #eafafa;
+}
+
+.comment-body{
   font-size:24px; 
   margin-left:15px;
 }
@@ -14,10 +18,6 @@
 
 .main-part {
   margin-top: 60px;
-}
-
-.post-li {
-  height: 70px;
 }
 
 .side-nav {
@@ -54,4 +54,42 @@ a.list-group-item {
 .connect-ico {
   width: 48px;
   height: 48px;
+}
+
+.post-container {
+  background-color: #d6f5f5;
+  margin-bottom: 10px;
+  display: flex;
+  position: relative;
+}
+
+.upvote-container {
+  height: 48px;
+  margin-left: 3px;
+  display: inline-block;
+}
+
+.upvote-content {
+  display: block;
+  margin: auto 0;
+  padding: 0;
+}
+
+.post-content-container {
+  display: inline-block;
+  margin-left: 3px;
+  min-height: 48px;
+  max-width: 75%;
+}
+
+.post-title {
+  margin: auto 0;
+  font-size: 22px
+}
+
+.post-page-button-container {
+  position: absolute;
+  font-size: 24px;
+  right: 24px;
+  top: 10px;
 }
