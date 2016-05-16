@@ -1,16 +1,23 @@
 app.controller('DashboardCtrl', ['$scope', 'UserServ', '$location', function($scope, UserServ, $location){
+  $scope.facebookMessage = ''
+  $scope.showFacebookMessage = false;
+
   if($location.search().facebookId){
     UserServ.setFacebookId($location.search().facebookId);
     $scope.connectsec = true;
   }
+
   if($location.search().auth === 'failed'){
-    $scope.facebookMessage = 'Failed authenticating with facebook'
+    $scope.facebookMessage = 'Failed authenticating with facebook';
     $scope.showFacebookMessage = true;
     $scope.connectsec = true;
   }
 
-  $scope.facebookMessage = ''
-  $scope.showFacebookMessage = false;
+  if($location.search().auth === 'success'){
+    $scope.facebookMessage = 'This Facebook Account is already connected to a user';
+    $scope.showFacebookMessage = true;
+    $scope.connectsec = true;
+  }
 
   $scope.user = UserServ.getFullUserData();
   $scope.posts = [];

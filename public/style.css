@@ -45,3 +45,13 @@ a.list-group-item {
 .clickable {
   cursor: pointer;
 }
+
+.login-ico {
+  width: 64px;
+  height: 64px;
+}
+
+.connect-ico {
+  width: 48px;
+  height: 48px;
+}

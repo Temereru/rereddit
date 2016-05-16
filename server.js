@@ -202,7 +202,7 @@ app.post('/login', function(req,res,next){
   })(req, res, next);
 });
 
-passport.use(new FacebookStrategy({
+passport.use('connectFacebook', new FacebookStrategy({
   clientID: '1127373727323306',
   clientSecret: 'cefd4bab46437e5a05816a1c3f92c798',
   callbackURL: "http://localhost:8080/user/connectFacebook/callback",
@@ -214,20 +214,27 @@ function(accessToken, refreshToken, profile, done){
 }
 ));
 
-app.get('/user/connectFacebook', passport.authenticate('facebook'));
+app.get('/user/connectFacebook', passport.authenticate('connectFacebook'));
 
 app.get('/user/connectFacebook/callback',
-  passport.authenticate('facebook', {
+  passport.authenticate('connectFacebook', {
     successRedirect : '/FacebookConnectionSuccess',
     failureRedirect : '/FacebookConnectionFailure'
   }));
 
 app.get('/FacebookConnectionSuccess', function(req, res){
-  res.redirect('http://localhost:8080/#/dashboard/settings?facebookId=' + req.user.id);
+  User.findOne({facebookId: req.user.id}, function(err, user){
+    if (!user) {
+      res.redirect('http://localhost:8080/#/dashboard/settings?facebookId=' + req.user.id);
+    } else {
+      res.redirect('http://localhost:8080/#/dashboard/settings?auth=success');
+    }
+  })
+  
 })
 
 app.get('/FacebookConnectionFailure', function(req, res){
-  res.redirect('http://localhost:8080/#/dashboard/settings?auth="failed"');
+  res.redirect('http://localhost:8080/#/dashboard/settings?auth=failed');
 })
 
 app.put('/user/setFacebookId/:id', auth, function(req, res){
@@ -239,7 +246,7 @@ app.put('/user/setFacebookId/:id', auth, function(req, res){
   })
 })
 
-passport.use(new FacebookStrategy({
+passport.use('loginFacebook',new FacebookStrategy({
   clientID: '1127373727323306',
   clientSecret: 'cefd4bab46437e5a05816a1c3f92c798',
   callbackURL: "http://localhost:8080/user/loginFacebook/callback",
@@ -251,10 +258,10 @@ function(accessToken, refreshToken, profile, done){
 }
 ));
 
-app.get('/user/loginFacebook', passport.authenticate('facebook'))
+app.get('/user/loginFacebook', passport.authenticate('loginFacebook'))
 
 app.get('/user/loginFacebook/callback', 
-  passport.authenticate('facebook', {
+  passport.authenticate('loginFacebook', {
     successRedirect : '/FacebookLoginSuccess',
     failureRedirect : '/FacebookLoginFailure'
   }));
