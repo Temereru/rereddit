@@ -26,4 +26,8 @@ app.controller('MainCtrl', ['$scope', 'posts', 'UserServ', function($scope, post
   $scope.incrementUpvotes = function(post){
     posts.upvote(post._id, UserServ.getToken());
   }
+
+  $scope.decrementUpvotes = function(post){
+    posts.downvote(post._id, UserServ.getToken());
+  }
 }]);

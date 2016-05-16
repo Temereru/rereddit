@@ -95,7 +95,7 @@ app.put('/post/:id/upvote', auth, function(req, res){
 
 app.put('/post/:id/downvote', auth, function(req, res){
   Post.findById(req.params.id, function(err, post){
-    post.upvotes--;
+    post.downvote();
     post.save(function(err, post){
       res.send(post);
     })
@@ -105,6 +105,15 @@ app.put('/post/:id/downvote', auth, function(req, res){
 app.put('/comment/:id/upvote', auth, function(req, res){
   Comment.findById(req.params.id, function(err, comment){
     comment.upvote();
+    comment.save(function(err, post){
+      res.send(comment);
+    })
+  })
+});
+
+app.put('/comment/:id/downvote', auth, function(req, res){
+  Comment.findById(req.params.id, function(err, comment){
+    comment.downvote();
     comment.save(function(err, post){
       res.send(comment);
     })

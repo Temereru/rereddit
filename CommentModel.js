@@ -12,6 +12,10 @@ commentSchema.methods.upvote = function(){
   this.upvotes++;
 };
 
+commentSchema.methods.downvote = function(){
+  this.upvotes--;
+};
+
 var Comment = mongoose.model('Comment', commentSchema);
 
 module.exports = Comment;

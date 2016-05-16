@@ -13,6 +13,10 @@ postSchema.methods.upvote = function(){
   this.upvotes++;
 };
 
+postSchema.methods.downvote = function(){
+  this.upvotes--;
+};
+
 var Post = mongoose.model('Post', postSchema);
 
 module.exports = Post;

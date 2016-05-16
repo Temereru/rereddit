@@ -1,13 +1,23 @@
-<div class="page-header col-sm-6 col-sm-offset-3">
-  <h3>
-    <a ng-show="post.link" href="{{post.link}}">{{post.title}}</a>
-    <span ng-hide="post.link">{{post.title}} by {{post.poster.username}}</span>
-  </h3>
-  <h4>Comments</h4>
-  <div ng-repeat="comment in post.comments | orderBy:'-upvotes' track by comment._id">
-   <p><span class="glyphicon glyphicon-thumbs-up" ng-click="!isLogged || incrementUpvotes(comment)" ng-disabled="!isLogged"></span>
-      {{comment.upvotes}}
-    {{comment.title}} by {{comment.commenter.username}}</p>  
+<div class="page-header col-sm-6 col-sm-offset-3 post-section">
+  <div class="text-center single-post-content">
+    <a ng-show="post.link" href="{{post.link}}" class="post-title">{{post.title}}</a>
+    <span ng-hide="post.link" class="post-title">{{post.title}}</span><span> by {{post.poster.username}}</span>
+  </div>
+  <div class="text-center">
+    <h4>Comments</h4>
+  </div> 
+  <div ng-repeat="comment in post.comments | orderBy:'-upvotes' track by comment._id" class="comment-container">
+   <div class="upvote-container">
+      <span class="glyphicon glyphicon-chevron-up upvote-content text-center" ng-class="{clickable: isLogged}" ng-click="!isLogged || incrementUpvotes(comment)" ng-disabled="!isLogged"></span>
+      <label class="upvote-content label label-primary">{{comment.upvotes}}</label>
+      <span class="glyphicon glyphicon-chevron-down upvote-content text-center" ng-class="{clickable: isLogged}" ng-click="!isLogged || decrementUpvotes(comment)" ng-disabled="!isLogged"></span>
+    </div>
+    <div class="comment-content-container">
+      <span class="comment-title">
+        {{comment.title}}
+      </span>
+      by {{comment.commenter.username}}
+    </div>
   </div>
 </div>
 
