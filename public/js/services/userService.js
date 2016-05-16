@@ -66,6 +66,11 @@ app.factory('UserServ', function($http, $window, $rootScope, $location, $window)
       scope.$on('$destroy', handler);
     },
 
+    subscribeGooglePlusSuccess: function(scope, callback){
+      var handler = $rootScope.$on('google-plus-successfull-event', callback);
+      scope.$on('$destroy', handler);
+    },
+
     register: function(user){
       $http.post('/register', user).then(function(response){
         if(response.data.token){
@@ -158,15 +163,9 @@ app.factory('UserServ', function($http, $window, $rootScope, $location, $window)
 
     connectFacebook: function(id){
       $window.open('/user/connectFacebook', '_self');
-      // $http.get('/user/connectFacebook/', {headers: {Authorization: 'Bearer ' + getToken()}}).then(function(res){
-
-      // }, function(err){
-      //   console.log(err);
-      // })
     },
 
     setFacebookId: function(id){
-      console.log(currentUser.userId);
       $http.put('/user/setFacebookId/' + currentUser.userId, {facebookId: id}, {headers: {Authorization: 'Bearer ' + getToken()}}).then(function(res){
         $rootScope.$emit('facebook-successfull-event');
       }, function(err){
@@ -188,8 +187,36 @@ app.factory('UserServ', function($http, $window, $rootScope, $location, $window)
       }, function(err){
         scope.errMsg = 'You need to first register and connect you profile with a facebook account';
         scope.showErrMsg = true;
-        console.log(err);
       })
+    },
+
+    connectGooglePlus: function(id){
+      $window.open('/user/connectGooglePlus', '_self');
+    },
+
+    setGooglePlusId: function(id){
+      $http.put('/user/setGooglePlusId/' + currentUser.userId, {googlePlusId: id}, {headers: {Authorization: 'Bearer ' + getToken()}}).then(function(res){
+        $rootScope.$emit('google-plus-successfull-event');
+      }, function(err){
+        console.log(err);
+      });
+    },
+
+    loginWithGooglePlus: function(){
+      $window.open('/user/loginGooglePlus', '_self');
+    },
+
+    loginGooglePlusId: function(scope, id){
+      $http.get('user/loginGooglePlusId/' + id).then(function(res){
+        if(res.data.token){
+          _setJWT(res.data.token);
+          setCurrentUser(false);
+          $location.url('/');
+        }
+      }, function(err){
+        scope.errMsg = 'You need to first register and connect you profile with a Google+ account';
+        scope.showErrMsg = true;
+      });
     }
   };
 });

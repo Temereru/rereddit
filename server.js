@@ -6,8 +6,10 @@ var passport = require('passport');
 var expressJWT = require('express-jwt')
 var expressSession = require('express-session');
 
+
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 var User = require('./UserModel');
 var Post = require('./PostModel');
@@ -227,14 +229,14 @@ app.get('/FacebookConnectionSuccess', function(req, res){
     if (!user) {
       res.redirect('http://localhost:8080/#/dashboard/settings?facebookId=' + req.user.id);
     } else {
-      res.redirect('http://localhost:8080/#/dashboard/settings?auth=success');
+      res.redirect('http://localhost:8080/#/dashboard/settings?auth=success&&type=facebook');
     }
-  })
+  });
   
 })
 
 app.get('/FacebookConnectionFailure', function(req, res){
-  res.redirect('http://localhost:8080/#/dashboard/settings?auth=failed');
+  res.redirect('http://localhost:8080/#/dashboard/settings?auth=failed&&type=facebook');
 })
 
 app.put('/user/setFacebookId/:id', auth, function(req, res){
@@ -271,7 +273,7 @@ app.get('/FacebookLoginSuccess', function(req, res){
 })
 
 app.get('/FacebookLoginFailure', function(req, res){
-  res.redirect('http://localhost:8080/#/login?auth=failure');
+  res.redirect('http://localhost:8080/#/login?auth=failure&&type=facebook');
 })
 
 app.get('/user/loginFacebookId/:id', function(req, res){
@@ -279,11 +281,92 @@ app.get('/user/loginFacebookId/:id', function(req, res){
     if (user) {
       res.json({token: user.generateJWT()});
     } else {
-      res.status(401);
+      res.status(351);
+      res.end();
     }
   })
 })
 
+passport.use('connectGooglePlus', new GoogleStrategy({
+    clientID: '32469330108-8l4cgdbcoiasbbk93mu47mlvham2919h.apps.googleusercontent.com',
+    clientSecret: 'h15c3eacLx3Lfg5PR4ouOgbK',
+    callbackURL: "http://localhost:8080/user/connectGooglePlus/callback"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    
+    return cb(null, profile);
+  }
+));
+
+app.get('/user/connectGooglePlus', passport.authenticate('connectGooglePlus', { scope: ['profile'] }))
+
+app.get('/user/connectGooglePlus/callback', 
+  passport.authenticate('connectGooglePlus', {
+    successRedirect : '/googlePlusConnectSuccess',
+    failureRedirect : '/googlePlusConnectFailure'
+  }));
+
+app.get('/googlePlusConnectSuccess', function(req, res){
+  User.findOne({googlePlusId: req.user.id}, function(err, user){
+    if (!user) {
+      res.redirect('http://localhost:8080/#/dashboard/settings?googlePlusId=' + req.user.id);
+    } else {
+      res.redirect('http://localhost:8080/#/dashboard/settings?auth=success&&type=googlePlus');
+    }
+  })
+});
+
+app.get('/googlePlusConnectFailure', function(req, res){
+  res.redirect('http://localhost:8080/#/dashboard/settings?auth=failed&&type=googlePlus');
+});
+
+app.put('/user/setGooglePlusId/:id', auth, function(req, res){
+  User.findById(req.params.id, function(err, user){
+    user.googlePlusId = req.body.googlePlusId;
+    user.save(function(err, user){
+      res.send(user);
+    })
+  })
+})
+
+//dsdfds
+passport.use('loginGooglePlus',new GoogleStrategy({
+    clientID: '32469330108-8l4cgdbcoiasbbk93mu47mlvham2919h.apps.googleusercontent.com',
+    clientSecret: 'h15c3eacLx3Lfg5PR4ouOgbK',
+    callbackURL: "http://localhost:8080/user/loginGooglePlus/callback"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    
+    return cb(null, profile);
+  }
+));
+
+app.get('/user/loginGooglePlus', passport.authenticate('loginGooglePlus', { scope: ['profile'] }))
+
+app.get('/user/loginGooglePlus/callback', 
+  passport.authenticate('loginGooglePlus', {
+    successRedirect : '/googlePlusLoginSuccess',
+    failureRedirect : '/googlePlusLoginFailure'
+  }));
+
+app.get('/googlePlusLoginSuccess', function(req, res){
+  res.redirect('http://localhost:8080/#/login?googlePlusId=' + req.user.id);
+})
+
+app.get('/googlePlusLoginFailure', function(req, res){
+  res.redirect('http://localhost:8080/#/login?auth=failure&&type=googlePlus');
+})
+
+app.get('/user/loginGooglePlusId/:id', function(req, res){
+  User.findOne({googlePlusId: req.params.id}, function(err, user){
+    if (user) {
+      res.json({token: user.generateJWT()});
+    } else {
+      res.status(351);
+      res.end();
+    }
+  })
+})
 
 app.listen(8080);
 

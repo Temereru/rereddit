@@ -1,21 +1,38 @@
 app.controller('DashboardCtrl', ['$scope', 'UserServ', '$location', function($scope, UserServ, $location){
   $scope.facebookMessage = ''
   $scope.showFacebookMessage = false;
+  $scope.googlePlusMessage = ''
+  $scope.showGooglePlusMessage = false;
 
   if($location.search().facebookId){
     UserServ.setFacebookId($location.search().facebookId);
     $scope.connectsec = true;
   }
 
+  if($location.search().googlePlusId){
+    UserServ.setGooglePlusId($location.search().googlePlusId);
+    $scope.connectsec = true;
+  }
+
   if($location.search().auth === 'failed'){
-    $scope.facebookMessage = 'Failed authenticating with facebook';
-    $scope.showFacebookMessage = true;
+    if($location.search().auth === 'facebook'){
+      $scope.facebookMessage = 'Failed authenticating with Facebook';
+      $scope.showFacebookMessage = true;
+    }else if($location.search().type === 'googlePlus') {
+      $scope.googlePlusMessage = 'Failed authenticating with Google+';
+      $scope.showGooglePlusMessage = true;
+    }
     $scope.connectsec = true;
   }
 
   if($location.search().auth === 'success'){
-    $scope.facebookMessage = 'This Facebook Account is already connected to a user';
-    $scope.showFacebookMessage = true;
+    if($location.search().auth === 'facebook'){
+      $scope.facebookMessage = 'This Facebook account is already connected to a user';
+      $scope.showFacebookMessage = true;
+    }else if($location.search().type === 'googlePlus') {
+      $scope.googlePlusMessage = 'This Google+ account is already connected to a user';
+      $scope.showGooglePlusMessage = true;
+    }
     $scope.connectsec = true;
   }
 
@@ -38,6 +55,12 @@ app.controller('DashboardCtrl', ['$scope', 'UserServ', '$location', function($sc
   UserServ.subscribeFacebookSuccess($scope, function(){
     $scope.facebookMessage = 'Successfully connected with facebook, you can now login using facebook'
     $scope.showFacebookMessage = true;
+    $scope.connectsec = true;
+  })
+
+  UserServ.subscribeGooglePlusSuccess($scope, function(){
+    $scope.googlePlusMessage = 'Successfully connected with Google+ , you can now login using Google+'
+    $scope.showGooglePlusMessage = true;
     $scope.connectsec = true;
   })
 
@@ -64,5 +87,9 @@ app.controller('DashboardCtrl', ['$scope', 'UserServ', '$location', function($sc
 
   $scope.connectFacebook = function(){
     UserServ.connectFacebook($scope.user._id);
+  };
+
+  $scope.connectGooglePlus = function(){
+    UserServ.connectGooglePlus($scope.user._id);
   }
 }]);

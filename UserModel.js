@@ -10,7 +10,8 @@ var userSchema = new Schema({
   password: String,
   salt: String,
   comments: [{type: Schema.ObjectId, ref: 'Comment'}],
-  facebookId: String
+  facebookId: String,
+  googlePlusId: String
 });
 
 userSchema.methods.setPassword = function(password){
