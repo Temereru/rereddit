@@ -4,14 +4,15 @@ var passport = require('passport');
 var expressJWT = require('express-jwt');
 
 var User = require('../UserModel');
+var googleCred = require('../googleCredentials');
 
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 var auth = expressJWT({secret: 'SECRET'});
 
 passport.use('connectGooglePlus', new GoogleStrategy({
-    clientID: '32469330108-8l4cgdbcoiasbbk93mu47mlvham2919h.apps.googleusercontent.com',
-    clientSecret: 'h15c3eacLx3Lfg5PR4ouOgbK',
+    clientID: googleCred.clientID,
+    clientSecret: googleCred.clientSecret,
     callbackURL: "http://localhost:8080/user/connectGooglePlus/callback"
   },
   function(accessToken, refreshToken, profile, cb) {

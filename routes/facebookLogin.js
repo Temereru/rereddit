@@ -3,12 +3,13 @@ var router = express.Router();
 var passport = require('passport');
 
 var User = require('../UserModel');
+var facebookCred = require('../facebookCredentials');
 
 var FacebookStrategy = require('passport-facebook').Strategy;
 
 passport.use('loginFacebook',new FacebookStrategy({
-  clientID: '1127373727323306',
-  clientSecret: 'cefd4bab46437e5a05816a1c3f92c798',
+  clientID: facebookCred.clientID,
+  clientSecret: facebookCred.clientSecret,
   callbackURL: "http://localhost:8080/user/loginFacebook/callback",
   profileFields: ['id']
 },
