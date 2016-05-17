@@ -1,4 +1,4 @@
-app.controller('DashboardCtrl', ['$scope', 'UserServ', '$location', function($scope, UserServ, $location){
+module.exports = function($scope, UserServ, $location){
   $scope.facebookMessage = ''
   $scope.showFacebookMessage = false;
   $scope.googlePlusMessage = ''
@@ -92,4 +92,4 @@ app.controller('DashboardCtrl', ['$scope', 'UserServ', '$location', function($sc
   $scope.connectGooglePlus = function(){
     UserServ.connectGooglePlus($scope.user._id);
   }
-}]);
+};

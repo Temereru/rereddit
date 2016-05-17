@@ -1,4 +1,4 @@
-app.controller('MainCtrl', ['$scope', 'posts', 'UserServ', function($scope, posts, UserServ){
+module.exports = function($scope, posts, UserServ){
   $scope.posts = posts.givePosts();
   $scope.title = '';
   $scope.link = '';
@@ -30,4 +30,4 @@ app.controller('MainCtrl', ['$scope', 'posts', 'UserServ', function($scope, post
   $scope.decrementUpvotes = function(post){
     posts.downvote(post._id, UserServ.getToken());
   }
-}]);
+};

@@ -1,6 +1,16 @@
-var app = angular.module('redditFun', ['ui.router']);
+require('angular');
+require('angular-ui-router');
 
-app.config(function($stateProvider, $urlRouterProvider){
+var posts = require('./services/posts');
+var userService = require('./services/userService');
+var mainCtrl = require('./controllers/mainController');
+var dashboardCtrl = require('./controllers/dashboardController');
+var navCtrl = require('./controllers/navController');
+var postsCtrl = require('./controllers/postsController');
+var userCtrl = require('./controllers/userController');
+
+angular.module('redditFun', ['ui.router'])
+  .config(function($stateProvider, $urlRouterProvider){
 
   $urlRouterProvider.otherwise('/home');
 
@@ -49,4 +59,11 @@ app.config(function($stateProvider, $urlRouterProvider){
       url: '/posts',
       templateUrl: 'js/templates/dashboard-posts.html',
     });
-});
+  })
+    .factory('posts', posts)
+    .factory('UserServ', userService)
+    .controller('MainCtrl', ['$scope', 'posts', 'UserServ', mainCtrl])
+    .controller('DashboardCtrl', ['$scope', 'UserServ', '$location', dashboardCtrl])
+    .controller('NavCtrl', ['$scope', 'UserServ', navCtrl])
+    .controller('PostsCtrl', ['$scope', 'posts', '$stateParams', 'UserServ', postsCtrl])
+    .controller('UserCtrl', ['$scope', 'UserServ', '$location', userCtrl]);

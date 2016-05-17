@@ -1,4 +1,4 @@
-app.controller('UserCtrl', ['$scope', 'UserServ', '$location', function($scope, UserServ, $location){
+module.exports = function($scope, UserServ, $location){
 
   $scope.showErrMsg = false;
 
@@ -43,4 +43,4 @@ app.controller('UserCtrl', ['$scope', 'UserServ', '$location', function($scope, 
     UserServ.loginWithGooglePlus();
   }
 
-}]);
+};

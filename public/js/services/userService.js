@@ -1,4 +1,4 @@
-app.factory('UserServ', function($http, $window, $rootScope, $location, $window){
+module.exports = function($http, $window, $rootScope, $location, $window){
   
   var loggedIn = false;
   var _setJWT = function(token){
@@ -219,4 +219,4 @@ app.factory('UserServ', function($http, $window, $rootScope, $location, $window)
       });
     }
   };
-});
+};

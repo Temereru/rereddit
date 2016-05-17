@@ -1,4 +1,4 @@
-app.controller('NavCtrl', ['$scope', 'UserServ', function($scope, UserServ){
+module.exports = function($scope, UserServ){
 
   $scope.getUserData = function(){
     $scope.currentUsername = UserServ.getUsername();
@@ -10,4 +10,4 @@ app.controller('NavCtrl', ['$scope', 'UserServ', function($scope, UserServ){
   $scope.logout = function(){
     UserServ.logout();
   }
-}]);
+};

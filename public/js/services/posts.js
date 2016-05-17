@@ -1,4 +1,4 @@
-app.factory('posts', function($http, $rootScope){
+module.exports = function($http, $rootScope){
   var posts = [];
 
   var getposts = function(){
@@ -107,4 +107,4 @@ app.factory('posts', function($http, $rootScope){
       })
     }
   };
-});
+};

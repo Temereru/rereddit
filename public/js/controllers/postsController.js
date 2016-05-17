@@ -1,4 +1,4 @@
-app.controller('PostsCtrl', ['$scope', 'posts', '$stateParams', 'UserServ', function($scope, posts, $stateParams, UserServ) {
+module.exports = function($scope, posts, $stateParams, UserServ) {
   $scope.id = $stateParams.id
   $scope.post = posts.givePost($scope.id);
   $scope.commentTitle = '';
@@ -27,4 +27,4 @@ app.controller('PostsCtrl', ['$scope', 'posts', '$stateParams', 'UserServ', func
   $scope.decrementUpvotes = function(comment){
     posts.downvoteComment($scope.id, comment._id, UserServ.getToken());
   }
-}]);
+};
