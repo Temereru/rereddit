@@ -1,13 +1,24 @@
-module.exports = function($http, $window, $rootScope, $location, $window){
+module.exports = function($http, $window, $rootScope){
   
   var loggedIn = false;
   var _setJWT = function(token){
-    localStorage['passportJWT'] = token;
+    $window.localStorage['passportJWT'] = token;
   };
 
   var _clearJWT = function(){
-    localStorage.removeItem('passportJWT');
+    $window.localStorage.removeItem('passportJWT');
   };
+
+  var getToken = function(){ 
+    return $window.localStorage['passportJWT'];
+  };
+
+  var parseToken = function(){
+    var token = getToken();
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace('-', '+').replace('_', '/');
+    return JSON.parse($window.atob(base64));
+  }
 
   var currentUser = {
     userId: '',
@@ -26,10 +37,7 @@ module.exports = function($http, $window, $rootScope, $location, $window){
       loggedIn = false;
       $rootScope.$emit('user-change-event');
     }else{
-      var token = localStorage['passportJWT'];
-      var base64Url = token.split('.')[1];
-      var base64 = base64Url.replace('-', '+').replace('_', '/');
-      jwtObj = JSON.parse($window.atob(base64));
+      jwtObj = parseToken();
       currentUser.userId = jwtObj._id;
       currentUser.username = jwtObj.username;
       loggedIn = true;
@@ -37,11 +45,7 @@ module.exports = function($http, $window, $rootScope, $location, $window){
     }
   };
 
-  getToken = function(){ 
-    return localStorage['passportJWT'];
-  };
-
-  if(localStorage['passportJWT']){
+  if(getToken()){
     setCurrentUser(false);
   };
 
@@ -76,7 +80,7 @@ module.exports = function($http, $window, $rootScope, $location, $window){
         if(response.data.token){
             _setJWT(response.data.token);
             setCurrentUser(false);
-            $location.url('/');
+            $state.go('home');
         }      
       }, function(err){
         console.log(err);
@@ -88,7 +92,7 @@ module.exports = function($http, $window, $rootScope, $location, $window){
         if(response.data.token){
           _setJWT(response.data.token);
           setCurrentUser(false);
-          $location.url('/');
+          $state.go('home');
         }
       }, function(err){
         console.log(err);
@@ -98,7 +102,7 @@ module.exports = function($http, $window, $rootScope, $location, $window){
     logout: function(){
       _clearJWT();
       setCurrentUser(true);
-      $location.url('/');
+      $state.go('home');
     },
 
     getUsername: function(){
@@ -116,10 +120,7 @@ module.exports = function($http, $window, $rootScope, $location, $window){
     getToken: getToken,
 
     getFullUserData: function(){
-      var token = localStorage['passportJWT'];
-      var base64Url = token.split('.')[1];
-      var base64 = base64Url.replace('-', '+').replace('_', '/');
-      return JSON.parse($window.atob(base64));
+      return parseToken();
     },
 
     getUserPosts: function(id){
@@ -182,7 +183,7 @@ module.exports = function($http, $window, $rootScope, $location, $window){
         if(res.data.token){
           _setJWT(res.data.token);
           setCurrentUser(false);
-          $location.url('/');
+          $state.go('home');
         }
       }, function(err){
         scope.errMsg = 'You need to first register and connect you profile with a facebook account';
@@ -211,7 +212,7 @@ module.exports = function($http, $window, $rootScope, $location, $window){
         if(res.data.token){
           _setJWT(res.data.token);
           setCurrentUser(false);
-          $location.url('/');
+          $state.go('home');
         }
       }, function(err){
         scope.errMsg = 'You need to first register and connect you profile with a Google+ account';
