@@ -35815,7 +35815,7 @@ module.exports = function($http, $rootScope){
   };
 };
 },{}],11:[function(require,module,exports){
-module.exports = function($http, $window, $rootScope){
+module.exports = function($http, $window, $rootScope, $state){
   
   var loggedIn = false;
   var _setJWT = function(token){
@@ -35897,7 +35897,7 @@ module.exports = function($http, $window, $rootScope){
         if(response.data.token){
             _setJWT(response.data.token);
             setCurrentUser(false);
-            $state.go('home');
+             $state.go('home');
         }      
       }, function(err){
         console.log(err);

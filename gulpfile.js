@@ -28,7 +28,6 @@ gulp.task('browserify', function() {
 });
 
 gulp.task('watch', function(){
-  gulp.watch('public/js/*.js', ['browserify']);
   gulp.watch('public/js/**/*.js', ['browserify']);
 });
 
