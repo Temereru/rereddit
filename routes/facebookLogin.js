@@ -3,7 +3,7 @@ var router = express.Router();
 var passport = require('passport');
 
 var User = require('../UserModel');
-var facebookCred = require('../facebookCredentials');
+var facebookCred = require('../FacebookCredentials');
 
 var FacebookStrategy = require('passport-facebook').Strategy;
 
