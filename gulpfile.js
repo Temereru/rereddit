@@ -4,18 +4,18 @@ var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var exec = require('child_process').exec;
 
-gulp.task('server', function (cb) {
-  exec('mongod', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
-  exec('node server.js', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
-});
+// gulp.task('server', function (cb) {
+//   exec('mongod', function (err, stdout, stderr) {
+//     console.log(stdout);
+//     console.log(stderr);
+//     cb(err);
+//   });
+//   exec('node server.js', function (err, stdout, stderr) {
+//     console.log(stdout);
+//     console.log(stderr);
+//     cb(err);
+//   });
+// });
 
 gulp.task('browserify', function() {
   // Grabs the app.js file
@@ -36,4 +36,4 @@ gulp.task('install', function () {
   .pipe(install());
 });
 
-gulp.task('default', ['install', 'watch', 'server', 'browserify']);
+gulp.task('default', ['install', 'watch', 'browserify']);
