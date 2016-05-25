@@ -120,7 +120,9 @@ app.put('/comment/:id/downvote', auth, function(req, res){
   })
 });
 
-app.listen(8080);
+
+var port = normalizePort(process.env.PORT || '8080');
+app.listen(port);
 
 
 
