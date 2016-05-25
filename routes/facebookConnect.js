@@ -4,7 +4,7 @@ var passport = require('passport');
 var expressJWT = require('express-jwt');
 
 var User = require('../UserModel');
-var facebookCred = require('./facebookCredentials');
+var facebookCred = require('../facebookCredentials');
 
 var FacebookStrategy = require('passport-facebook').Strategy;
 
