@@ -11,7 +11,7 @@ var Post = require('./PostModel');
 var Comment = require('./CommentModel');
 var userRoutes = require('./routes/user');
 
-mongoose.connect('mongodb://localhost/rereddit');
+mongoose.connect(process.env.MONGOLAB_COBALT_URI || 'mongodb://localhost/rereddit');
 
 var auth = expressJWT({secret: 'SECRET'});
 
