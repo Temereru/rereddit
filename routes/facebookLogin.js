@@ -7,10 +7,16 @@ var facebookCred = require('../FacebookCredentials');
 
 var FacebookStrategy = require('passport-facebook').Strategy;
 
+if(process.env.PORT){
+  var url = 'https://whispering-journey-30135.herokuapp.com';
+}else {
+  var url = 'http://localhost:8080';
+}
+
 passport.use('loginFacebook',new FacebookStrategy({
   clientID: facebookCred.clientID,
   clientSecret: facebookCred.clientSecret,
-  callbackURL: "http://localhost:8080/user/loginFacebook/callback",
+  callbackURL: url + "/user/loginFacebook/callback",
   profileFields: ['id']
 },
 function(accessToken, refreshToken, profile, done){
@@ -28,11 +34,11 @@ router.get('/callback',
   }));
 
 router.get('/FacebookLoginSuccess', function(req, res){
-  res.redirect('http://localhost:8080/#/login?facebookId=' + req.user.id);
+  res.redirect(url + '/#/login?facebookId=' + req.user.id);
 });
 
 router.get('/FacebookLoginFailure', function(req, res){
-  res.redirect('http://localhost:8080/#/login?auth=failure&&type=facebook');
+  res.redirect(url + '/#/login?auth=failure&&type=facebook');
 });
 
 router.get('/loginFacebookId/:id', function(req, res){

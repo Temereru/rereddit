@@ -10,10 +10,16 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 
 var auth = expressJWT({secret: 'SECRET'});
 
+if(process.env.PORT){
+  var url = 'https://whispering-journey-30135.herokuapp.com';
+}else {
+  var url = 'http://localhost:8080';
+}
+
 passport.use('connectFacebook', new FacebookStrategy({
   clientID: facebookCred.clientID,
   clientSecret: facebookCred.clientSecret,
-  callbackURL: "http://localhost:8080/user/connectFacebook/callback",
+  callbackURL: url + "/user/connectFacebook/callback",
   profileFields: ['id']
 },
 function(accessToken, refreshToken, profile, done){
@@ -33,16 +39,16 @@ router.get('/callback',
 router.get('/FacebookConnectionSuccess', function(req, res){
   User.findOne({facebookId: req.user.id}, function(err, user){
     if (!user) {
-      res.redirect('http://localhost:8080/#/dashboard/settings?facebookId=' + req.user.id);
+      res.redirect(url + '/#/dashboard/settings?facebookId=' + req.user.id);
     } else {
-      res.redirect('http://localhost:8080/#/dashboard/settings?auth=success&&type=facebook');
+      res.redirect(url + '/#/dashboard/settings?auth=success&&type=facebook');
     }
   });
   
 });
 
 router.get('/FacebookConnectionFailure', function(req, res){
-  res.redirect('http://localhost:8080/#/dashboard/settings?auth=failed&&type=facebook');
+  res.redirect(url + '/#/dashboard/settings?auth=failed&&type=facebook');
 });
 
 router.put('/setFacebookId/:id', auth, function(req, res){

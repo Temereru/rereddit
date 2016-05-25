@@ -7,10 +7,16 @@ var googleCred = require('../googleCredentials');
 
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
+if(process.env.PORT){
+  var url = 'https://whispering-journey-30135.herokuapp.com';
+}else {
+  var url = 'http://localhost:8080';
+}
+
 passport.use('loginGooglePlus',new GoogleStrategy({
     clientID: googleCred.clientID,
     clientSecret: googleCred.clientSecret,
-    callbackURL: "http://localhost:8080/user/loginGooglePlus/callback"
+    callbackURL: url + "/user/loginGooglePlus/callback"
   },
   function(accessToken, refreshToken, profile, cb) {
     
@@ -27,11 +33,11 @@ router.get('/callback',
   }));
 
 router.get('/googlePlusLoginSuccess', function(req, res){
-  res.redirect('http://localhost:8080/#/login?googlePlusId=' + req.user.id);
+  res.redirect(url + '/#/login?googlePlusId=' + req.user.id);
 });
 
 router.get('/googlePlusLoginFailure', function(req, res){
-  res.redirect('http://localhost:8080/#/login?auth=failure&&type=googlePlus');
+  res.redirect(url + '/#/login?auth=failure&&type=googlePlus');
 });
 
 router.get('/loginGooglePlusId/:id', function(req, res){
